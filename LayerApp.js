@@ -31,8 +31,6 @@ LayerApp.Model = function(options) {
 		change : null
 	};
 
-
-
 	var data = {};
 	var helper = LayerApp.Helpers;
 
@@ -48,6 +46,8 @@ LayerApp.Model = function(options) {
 	};
 
 	this.on = function(event_name, fc) {
+		if(event_name=="save" || event_name=="delete")
+			event_name = "change_" + event_name;
 		events[event_name] = fc;
 	};
 
@@ -83,14 +83,14 @@ LayerApp.Model = function(options) {
 	//wrappers
 	this.save = function() {
 		this.synchronizer.save();
-		if(typeof events.change === "function")
-			events.change();
+		if(typeof events.change_save === "function")
+			events.change_save();
 		return this;
 	};
 	this["delete"] = function() {
 		this.synchronizer["delete"]();
-		if(typeof events.change === "function")
-			events.change();
+		if(typeof events.change_delete === "function")
+			events.change_delete();
 		return this;
 	};
 	this.read = function() {
@@ -100,14 +100,14 @@ LayerApp.Model = function(options) {
 	
 };
 
-/*
+
 //Dummy methods, noop. Must be implemented for each model
 LayerApp.Sync = function() {
 	this.save = function() {};
 	this["delete"] = function() {};
 	this.read = function() {};
 };
-
+/*
 LayerApp.View = function(options) {
 	var element = null;
 	var data = null;
