@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>LayerApp Test Suite</title>
+<script src="LayerApp.js" type="text/javascript" charset="utf-8" async defer></script>
+<link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.9.0.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js" type="text/javascript"></script>
+<script src="http://code.jquery.com/qunit/qunit-1.9.0.js"></script>
+<script>
+module("LayerApp Model");
+test("create Model", function() {
+	var model = new LayerApp.Model();
+	equal(model.toString(), "LayerApp Model");
+});
+test("create Model with options", function() {
+	var options = {opt1: 1, opt2: 2};
+	var model = new LayerApp.Model(options);
+	equal(model.opt1, 1);
+	equal(model.opt2, 2);
+	equal(model.opt3, undefined);
+});
+test("set simple data", function() {
+	var model = new LayerApp.Model();
+	model.set("data1", 1);
+	model.set("data2", 2);
+	equal(model.data.data1, 1);
+	equal(model.data.data2, 2);
+	equal(model.data.data3, undefined);
+});
+test("set simple json data", function() {
+	var model = new LayerApp.Model();
+	model.set({data1: 1, data2: 2});
+	equal(model.data.data1, 1);
+	equal(model.data.data2, 2);
+	equal(model.data.data3, undefined);
+});
+
+test("set multilevel json data", function() {
+	var model = new LayerApp.Model();
+	model.set({data1: 1, data2: { deepdata1: 1, deepdata2: 2 }});
+	equal(model.data.data1, 1);
+	equal(model.data.data2.deepdata1, 1);
+	equal(model.data.data3, undefined);
+});
+
+test("find in data", function() {
+	var model = new LayerApp.Model();
+	model.set({data1: "peter", data2: "mccalister", data3: {city: "London"}});
+	equal(model.find_in_data("ete"), true);
+	equal(model.find_in_data("ETE"), true);
+	equal(model.find_in_data("londo"), true);
+	equal(model.find_in_data("other n"), false);
+});
+
+test("attach & trigger event", function() {
+	var x = 0;
+	var model = new LayerApp.Model();
+	equal(x, 0);
+	model.on("my_custom_event", function() { x = 1 });
+	equal(x, 0);
+	model.trigger("my_custom_event");
+});
+
+test("trigger change after save", function() {
+	var x = 0;
+	var model = new LayerApp.Model();
+	model.on("change", function() { x = 1 });
+	equal(x, 0);
+	model.save();
+	equal(x, 1);
+});
+
+test("trigger change after delete", function() {
+	var x = 0;
+	var model = new LayerApp.Model();
+	model.on("change", function() { x = 1 });
+	equal(x, 0);
+	model.delete();
+	equal(x, 1);
+});
+
+
+</script>
+</head>
+<body>
+<div id="qunit"></div>
+</body>
+</html>
+
