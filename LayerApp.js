@@ -22,6 +22,7 @@ LayerApp.Model = function(options) {
 	};
 	//creates a fake synchronizer
 	this.synchronizer = new LayerApp.Sync();
+	this.async = true;
 
 	for(var key in options) {
 		this[key] = options[key];
@@ -32,8 +33,6 @@ LayerApp.Model = function(options) {
 	};
 
 	var data = {};
-	var helper = LayerApp.Helpers;
-
 	
 	this.set = function() {
 		if(arguments.length==2)
@@ -46,8 +45,6 @@ LayerApp.Model = function(options) {
 	};
 
 	this.on = function(event_name, fc) {
-		if(event_name=="save" || event_name=="delete")
-			event_name = "change_" + event_name;
 		events[event_name] = fc;
 	};
 
@@ -83,19 +80,25 @@ LayerApp.Model = function(options) {
 	//wrappers
 	this.save = function() {
 		this.synchronizer.save();
-		if(typeof events.change_save === "function")
-			events.change_save();
+		if(!this.async && typeof events.save === "function")
+			events.save();
 		return this;
 	};
 	this["delete"] = function() {
 		this.synchronizer["delete"]();
-		if(typeof events.change_delete === "function")
-			events.change_delete();
+		if(!this.async && typeof events["delete"] === "function")
+			events["delete"]();
 		return this;
 	};
 	this.read = function() {
 		this.synchronizer.read();
+		if(!this.async && typeof events.read === "function")
+			events.read();
 		return this;
+	};
+	this.end = function(method) {
+		if(typeof events[method] === "function")
+			events[method]();
 	};
 	
 };
@@ -106,6 +109,7 @@ LayerApp.Sync = function() {
 	this.save = function() {};
 	this["delete"] = function() {};
 	this.read = function() {};
+
 };
 /*
 LayerApp.View = function(options) {

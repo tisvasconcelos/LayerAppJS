@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>LayerApp Test Suite</title>
-<script src="../LayerApp.js" type="text/javascript" charset="utf-8" async defer></script>
+<script src="../LayerApp.js" type="text/javascript"></script>
 <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.9.0.css">
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js" type="text/javascript"></script>
 <script src="http://code.jquery.com/qunit/qunit-1.9.0.js"></script>
@@ -62,10 +62,11 @@ test("attach & trigger event", function() {
 	model.trigger("my_custom_event");
 });
 
+/*
 test("call change() after save", function() {
 	var x = 0;
 	var model = new LayerApp.Model();
-	model.on("save", function() { x = 1 });
+	model.on("save", function() { x = 1; });
 	equal(x, 0);
 	model.save();
 	equal(x, 1);
@@ -79,16 +80,34 @@ test("call change() after delete", function() {
 	model.delete();
 	equal(x, 1);
 });
-
-/*
-test("trigger change()", function() {
-	var x = 0;
-	var model = new LayerApp.Model();
-	model.on("save", function() { x = 11 });
-	model.trigger("change");
-	equal(x, 11);
-});
 */
+
+test("trigger callback function after save in async = false mode", function() {
+	var model = new LayerApp.Model({
+		async: false
+	});
+	var x = 0;
+	equal(x, 0);
+	model.on("save", function() { x = 1; equal(x, 1); });
+	equal(x, 0);
+	model.save();
+
+});
+
+test("trigger callback function after save in async = true mode", function() {
+	var model = new LayerApp.Model();
+	var x = 0;
+	model.synchronizer.save = function() {
+		model.end("save");
+	}
+	equal(x, 0);
+	model.on("save", function() { x = 1; equal(x, 1); });
+	equal(x, 0);
+	model.save();
+
+});
+
+
 
 </script>
 </head>
