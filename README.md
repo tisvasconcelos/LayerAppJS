@@ -4,8 +4,6 @@ LayerAppJS
 Version: 0.1
 LayerAppJS provides Model-View library/framework agnostic structure to javascript applications
 
-DWR (http://directwebremoting.org/) is a Java library that enables Java on the server and JavaScript in a browser to interact and call each other as simply as possible.
-Fake DWR is an framework-library-agnostic way to mock DWR methods without the need to create a fake server to mock ajax requests.
 
 Browsers Tested
 ================================
@@ -89,15 +87,16 @@ And saving the model
 model.save();
 </pre>
 
-As said before, AppLayer.js is library/framework agnostic so this layer can be implemented, so you can implement with other libraries other than jQuery (the one used in the example)
+As said before, AppLayer.js is library/framework agnostic, so you can implement these methods from synchronizer (and others) with other libraries other than jQuery (the one used in the example).
 
-A required feature in every application is trigger a function (callback) after iteract with persistent layer. By default, AppLayer.js defines that the application works in async mode. To change this:
+By default, AppLayer.js defines that the application works in async mode. To change this:
 <pre>
 model.async = false;
 //or when creating the model
 var model = new AppLayer({async: false});
 </pre>
 
+A required feature in every application is trigger a function (callback) after iteract with persistent layer.
 To set the callback function for the save() method (the same for delete() and read())
 <pre>
 model.on("save", function() { // do stuff here; });
@@ -123,3 +122,8 @@ model.save();
 </pre>
 
 Implementing this way is necessary to keep AppLayer.js library/framework agnostic: it's not possible to get the return from a function, and then execute more code just after finish it, with async calls and without implementing the persistent layer.
+
+Next Steps
+================================
+
+LayerApp.View
