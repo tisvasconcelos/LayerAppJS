@@ -18,7 +18,7 @@ var LayerApp;
 LayerApp.Model = function(options) {
 
 	LayerApp.Model.prototype.toString = function() {
-		return "LayerApp Model";
+		return "LayerApp.Model";
 	};
 	//creates a fake synchronizer
 	this.synchronizer = new LayerApp.Sync();
@@ -33,6 +33,8 @@ LayerApp.Model = function(options) {
 	};
 
 	var data = {};
+
+	var binded_to = null;
 	
 	this.set = function() {
 		if(arguments.length==2)
@@ -79,27 +81,49 @@ LayerApp.Model = function(options) {
 
 	//wrappers
 	this.save = function() {
-		this.synchronizer.save();
+		this.synchronizer.save(this);
 		if(!this.async && typeof events.save === "function")
-			events.save();
+			events.save(this);
+		else if(!this.async && binded_to!==null) {
+			binded_to.render();
+		}
 		return this;
 	};
 	this["delete"] = function() {
-		this.synchronizer["delete"]();
+		this.synchronizer["delete"](this);
 		if(!this.async && typeof events["delete"] === "function")
-			events["delete"]();
+			events["delete"](this);
+		else if(!this.async && binded_to!==null) {
+			binded_to.render();
+		}
 		return this;
 	};
 	this.read = function() {
-		this.synchronizer.read();
+		this.synchronizer.read(this);
 		if(!this.async && typeof events.read === "function")
-			events.read();
+			events.read(this);
+		else if(!this.async && binded_to!==null) {
+			binded_to.render();
+		}
 		return this;
 	};
 	this.end = function(method) {
 		if(typeof events[method] === "function")
-			events[method]();
+			events[method](this);
+		if(binded_to!==null) {
+			binded_to.render();
+		}
 	};
+
+	this.binded_to = function(view) {
+		binded_to = view;
+	}
+
+	this.unbind = function() {
+		binded_to = null;
+	}
+
+	return this;
 	
 };
 
@@ -111,34 +135,67 @@ LayerApp.Sync = function() {
 	this.read = function() {};
 
 };
-/*
-LayerApp.View = function(options) {
-	var element = null;
-	var data = null;
-	//dummy method, noop. Must be implemented
-	this.render = function() {
 
+
+LayerApp.View = function(options) {
+
+	LayerApp.View.prototype.toString = function() {
+		return "LayerApp.View";
 	};
 
+	this.element = null;
+	var events = { };
+	var bind_to = null;
+
+	//dummy method, noop. Must be implemented
 	for(var key in options) {
 		this[key] = options[key];
 	}
 
 	this.set = function(el) {
-		element = el;
+		this.element = el;
 	};
 
-	this.refresh = function(callback) {
-		try {
-			this.render();	
-		} catch(e) {
-			console.log("Erro ao renderizar: " + e);
-		}
-		if(typeof callback==="function")
-			callback.call();
+	this.get = function(el) {
+		return this.element;
+	};
+
+	this.on = function(event_name, fc) {
+		events[event_name] = fc;
+	};
+
+	this.off = function(event_name) {
+		events[event_name] = null;
+	};
+
+	this.render = function() {
+		if(typeof events.render === "function")
+			events.render(this);
 		return this;
+	};
+
+	this.bind = function(model) {
+		if(model.toString() == "LayerApp.Model") {
+			bind_to = model;
+			model.binded_to(this);
+		}
+		return this;
+	};
+
+	this.unbind = function() {
+		bind_to.unbind();
+		bind_to = null;
+		return this;
+	};
+
+	this.binded_to = function() {
+		return bind_to;
+	};
+
+	this.refresh = function() {
+		this.render();
 	};
 
 	return this;
 };
-*/
+

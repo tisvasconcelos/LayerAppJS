@@ -63,7 +63,7 @@ Check if a certain value in data is present
 model.set({data1: "peter", data2: "mccalister", data3: {city: "London"}});
 model.find_in_data("ETE"); // true
 model.find_in_data("londo"); //true
-model.find_in_data("other n"; //false
+model.find_in_data("other n"); //false
 </pre>
 
 CRUD: every AppLayer.Model has an attribute named synchronizer that is an LayerApp.Sync object. It has 3 methods: save(), delete() and read(). These are the methods that iteract with the persitent layer from your application.
@@ -71,14 +71,14 @@ CRUD: every AppLayer.Model has an attribute named synchronizer that is an LayerA
 Defining the save() implementation (the same for delete() and read())
 <pre>
 var model = new LayerApp.Model();
-model.synchronizer.save = function() {
+model.synchronizer.save = function(current_model) {
 	$.ajax({
 		url: my_url,
 		data: my_data,
 		success: function(responseText) {
 			//do stuff here
 		}
-	})
+	});
 }
 </pre>
 
@@ -99,21 +99,22 @@ var model = new AppLayer({async: false});
 A required feature in every application is trigger a function (callback) after iteract with persistent layer.
 To set the callback function for the save() method (the same for delete() and read())
 <pre>
-model.on("save", function() { // do stuff here; });
-//model.on("delete", function() { // do stuff here; });
-//model.on("read", function() { // do stuff here; });
+model.on("save", function(m) { // do stuff here; });
+//model.on("delete", function(m) { // do stuff here; });
+//model.on("read", function(m) { // do stuff here; });
 </pre>
+Note that the callback function has a 'n' parameter. It is the 'model' object that called the respective method, in order to use it inside the callback function.
 
 Now a import part: when in async = false mode, the callback function defined with .on() is automatically triggered. But in async = true mode, you must inform the flow has ended with the method .end(pattern), where pattern is a string with the name from the caller method
 <pre>
 var model = new LayerApp.Model();
-model.synchronizer.save = function() {
+model.synchronizer.save = function(current_model) {
 	$.ajax({
 		url: my_url,
 		data: my_data,
 		success: function(responseText) {
 			//do stuff here
-			model.end("save"); //will do another stuff
+			current_model.end("save"); //will do another stuff
 		}
 	})
 }
