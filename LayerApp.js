@@ -44,19 +44,23 @@ LayerApp.Model = function(options) {
 				data[key] = arguments[0][key];
 			}
 		}
+		return this;
 	};
 
 	this.on = function(event_name, fc) {
 		events[event_name] = fc;
+		return this;
 	};
 
 	this.off = function(event_name) {
 		events[event_name] = null;
+		return this;
 	};
 
 	this.trigger = function(event_name) {
 		if(typeof events[event_name] === "function")
 			events[event_name]();
+		return this;
 	}
 
 	this.get = function(key) {
