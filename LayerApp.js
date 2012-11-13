@@ -49,6 +49,8 @@ LayerApp.Model = function(options) {
 
 	this.on = function(event_name, fc) {
 		events[event_name] = fc;
+
+		
 		return this;
 	};
 
