@@ -50,7 +50,7 @@ LayerApp.Model = function(options) {
 	this.on = function(event_name, fc) {
 		events[event_name] = fc;
 
-		
+
 		return this;
 	};
 
@@ -160,6 +160,7 @@ LayerApp.View = function(options) {
 
 	this.set = function(el) {
 		this.element = el;
+		return this;
 	};
 
 	this.get = function(el) {
@@ -168,10 +169,12 @@ LayerApp.View = function(options) {
 
 	this.on = function(event_name, fc) {
 		events[event_name] = fc;
+		return this;
 	};
 
 	this.off = function(event_name) {
 		events[event_name] = null;
+		return this;
 	};
 
 	this.render = function() {
