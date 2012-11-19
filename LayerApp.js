@@ -34,7 +34,7 @@ LayerApp.Model = function(options) {
 
 	var data = {};
 
-	var binded_to = null;
+	var bound_to = null;
 	
 	this.set = function() {
 		if(arguments.length==2)
@@ -90,8 +90,8 @@ LayerApp.Model = function(options) {
 		this.synchronizer.save(this);
 		if(!this.async && typeof events.save === "function")
 			events.save(this);
-		else if(!this.async && binded_to!==null) {
-			binded_to.render();
+		else if(!this.async && bound_to!==null) {
+			bound_to.render();
 		}
 		return this;
 	};
@@ -99,8 +99,8 @@ LayerApp.Model = function(options) {
 		this.synchronizer["delete"](this);
 		if(!this.async && typeof events["delete"] === "function")
 			events["delete"](this);
-		else if(!this.async && binded_to!==null) {
-			binded_to.render();
+		else if(!this.async && bound_to!==null) {
+			bound_to.render();
 		}
 		return this;
 	};
@@ -108,25 +108,25 @@ LayerApp.Model = function(options) {
 		this.synchronizer.read(this);
 		if(!this.async && typeof events.read === "function")
 			events.read(this);
-		else if(!this.async && binded_to!==null) {
-			binded_to.render();
+		else if(!this.async && bound_to!==null) {
+			bound_to.render();
 		}
 		return this;
 	};
 	this.end = function(method) {
 		if(typeof events[method] === "function")
 			events[method](this);
-		if(binded_to!==null) {
-			binded_to.render();
+		if(bound_to!==null) {
+			bound_to.render();
 		}
 	};
 
-	this.binded_to = function(view) {
-		binded_to = view;
+	this.bound_to = function(view) {
+		bound_to = view;
 	}
 
 	this.unbind = function() {
-		binded_to = null;
+		bound_to = null;
 	}
 
 	return this;
@@ -186,7 +186,7 @@ LayerApp.View = function(options) {
 	this.bind = function(model) {
 		if(model.toString() == "LayerApp.Model") {
 			bind_to = model;
-			model.binded_to(this);
+			model.bound_to(this);
 		}
 		return this;
 	};
@@ -197,7 +197,7 @@ LayerApp.View = function(options) {
 		return this;
 	};
 
-	this.binded_to = function() {
+	this.bound_to = function() {
 		return bind_to;
 	};
 

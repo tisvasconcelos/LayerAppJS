@@ -122,9 +122,9 @@ test("bind and unbind", function() {
 	var model = new LayerApp.Model({
 		data1: 1
 	});
-	equal(view.binded_to(), null);
+	equal(view.bound_to(), null);
 	view.bind(model);
-	equal(view.binded_to().data1, model.data1);
+	equal(view.bound_to().data1, model.data1);
 });
 
 module("Bindind model to view");
